@@ -51,6 +51,7 @@ export interface AuditInput {
   businessType: BusinessType;
   mainGoal: MainGoal;
   strategistNotes: string;
+  useProductLabelizer: boolean;
   labelStrategies: LabelStrategyConfig;
 }
 

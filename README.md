@@ -11,6 +11,7 @@ A clean internal Next.js app for PPC freelancers and agencies. Version 1 works f
 - Preview and edit the report in the browser.
 - Download a polished DOCX audit report from the edited preview.
 - Use the print flow to save the edited report as PDF.
+- Optional product feed labelizer for Google Shopping custom labels.
 - Future-ready placeholders for Google Ads API, GA4 API, and Search Console API.
 
 ## Setup
@@ -53,10 +54,12 @@ The app accepts:
 - `ga4_pages.csv` or `.xlsx`
 - `ga4_events.csv` or `.xlsx`
 - `search_console_queries.csv` or `.xlsx`
-- `product_source.csv` or `.xlsx`
+- `product_source.csv` or `.xlsx` when the optional product tool is switched on
 - `website_notes.md` or `.txt`
 
 ## Product source and labelizer
+
+The product tool is off by default to keep the normal audit flow simple. Switch on **Optionele producttool** in the audit form when you want to upload a feed and create custom labels. When it is off, the product upload is hidden and no labelizer file is generated.
 
 The product source upload accepts a product feed or spreadsheet with columns such as:
 
@@ -101,7 +104,7 @@ The audit can use:
 - Google Ads asset exports
 - GA4 pages and events exports
 - Search Console query exports
-- Product source/feed uploads
+- Product source/feed uploads when the optional product tool is enabled
 - Website notes in `.txt` or `.md`
 - Manual strategist notes from the form
 

@@ -15,6 +15,7 @@ const initialInput: AuditInput = {
   businessType: "lead_gen",
   mainGoal: "leads",
   strategistNotes: "",
+  useProductLabelizer: false,
   labelStrategies: {
     custom_label_0: "priority",
     custom_label_1: "price",
@@ -52,6 +53,7 @@ export function AuditForm() {
   const [parsedFiles, setParsedFiles] = useState<ParsedFileSummary[]>([]);
   const [status, setStatus] = useState<"idle" | "parsing" | "ready" | "error">("idle");
   const [error, setError] = useState<string>();
+  const activeUploadSlots = uploadSlots.filter((slot) => input.useProductLabelizer || slot !== "product_source");
 
   function update<K extends keyof AuditInput>(key: K, value: AuditInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
@@ -71,6 +73,20 @@ export function AuditForm() {
     setFiles((current) => ({ ...current, [slot]: file }));
   }
 
+  function toggleProductLabelizer(enabled: boolean) {
+    setInput((current) => ({ ...current, useProductLabelizer: enabled }));
+
+    if (!enabled) {
+      setFiles((current) => {
+        const next = { ...current };
+        delete next.product_source;
+        return next;
+      });
+      setLabeledProductsBase64(undefined);
+      setLabeledProductsFileName(undefined);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("parsing");
@@ -84,7 +100,7 @@ export function AuditForm() {
         formData.append(key, String(value));
       }
     });
-    uploadSlots.forEach((slot) => {
+    activeUploadSlots.forEach((slot) => {
       const file = files[slot];
       if (file) formData.append(slot, file);
     });
@@ -172,42 +188,67 @@ export function AuditForm() {
         </div>
 
         <div className="mt-8 rounded-lg border border-line bg-mist p-4">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Product feed labelizer</h2>
-            <p className="text-sm text-gray-600">
-              Kies wat de tool moet invullen in Google Shopping `custom_label_0` t/m `custom_label_4`.
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Optionele producttool</h2>
+              <p className="mt-1 text-sm text-gray-600">
+                Zet aan als je een productfeed wilt uploaden en automatisch custom labels wilt maken.
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-pressed={input.useProductLabelizer}
+              onClick={() => toggleProductLabelizer(!input.useProductLabelizer)}
+              className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition ${
+                input.useProductLabelizer ? "border-ink bg-ink text-white" : "border-line bg-white text-gray-600 hover:border-ink"
+              }`}
+            >
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${input.useProductLabelizer ? "bg-white" : "bg-gray-300"}`}
+              />
+              {input.useProductLabelizer ? "Aan" : "Uit"}
+            </button>
+          </div>
+
+          {input.useProductLabelizer ? (
+            <div className="mt-4 grid gap-3 border-t border-line pt-4">
+              <p className="text-sm text-gray-600">
+                Kies simpel wat de tool invult in Google Shopping custom_label_0 t/m custom_label_4.
+              </p>
+              {(["custom_label_0", "custom_label_1", "custom_label_2", "custom_label_3", "custom_label_4"] as const).map((label) => {
+                const selected = labelStrategyOptions.find((option) => option.value === input.labelStrategies[label]);
+                return (
+                  <label key={label} className="grid gap-1 text-sm font-medium text-ink sm:grid-cols-[130px_1fr] sm:items-center">
+                    <span>{label}</span>
+                    <span>
+                      <select
+                        value={input.labelStrategies[label]}
+                        onChange={(event) => updateLabelStrategy(label, event.target.value as LabelStrategy)}
+                        className="w-full rounded-md border border-line bg-white px-3 py-2"
+                      >
+                        {labelStrategyOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <span className="mt-1 block text-xs font-normal text-gray-500">{selected?.help}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mt-4 rounded-md border border-dashed border-line bg-white px-3 py-2 text-sm text-gray-500">
+              Productfeed upload staat uit. Voor een normale audit hoef je hier niets mee te doen.
             </p>
-          </div>
-          <div className="mt-4 grid gap-3">
-            {(["custom_label_0", "custom_label_1", "custom_label_2", "custom_label_3", "custom_label_4"] as const).map((label) => {
-              const selected = labelStrategyOptions.find((option) => option.value === input.labelStrategies[label]);
-              return (
-                <label key={label} className="grid gap-1 text-sm font-medium text-ink sm:grid-cols-[130px_1fr] sm:items-center">
-                  <span>{label}</span>
-                  <span>
-                    <select
-                      value={input.labelStrategies[label]}
-                      onChange={(event) => updateLabelStrategy(label, event.target.value as LabelStrategy)}
-                      className="w-full rounded-md border border-line bg-white px-3 py-2"
-                    >
-                      {labelStrategyOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="mt-1 block text-xs font-normal text-gray-500">{selected?.help}</span>
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+          )}
         </div>
 
         <div className="mt-8">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Uploads</h2>
           <div className="mt-3">
-            <FileUpload files={files} onChange={updateFile} />
+            <FileUpload files={files} onChange={updateFile} slots={activeUploadSlots} />
           </div>
         </div>
 

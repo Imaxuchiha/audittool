@@ -50,6 +50,7 @@ function auditInputFromForm(formData: FormData): AuditInput {
     businessType: (field(formData, "businessType") || "lead_gen") as AuditInput["businessType"],
     mainGoal: (field(formData, "mainGoal") || "leads") as AuditInput["mainGoal"],
     strategistNotes: field(formData, "strategistNotes"),
+    useProductLabelizer: field(formData, "useProductLabelizer") === "true",
     labelStrategies
   };
 }
@@ -107,7 +108,8 @@ export async function POST(request: NextRequest) {
     const keywordRows = normalizeGoogleAdsRows(keywordsTable?.rows || []);
     const searchTermRows = normalizeGoogleAdsRows(searchTermsTable?.rows || []);
     const changeRows = normalizeGoogleAdsRows(changeHistoryTable?.rows || []);
-    const productLabels = productSourceTable ? labelProducts(productSourceTable.rows, input.labelStrategies) : undefined;
+    const productLabels =
+      input.useProductLabelizer && productSourceTable ? labelProducts(productSourceTable.rows, input.labelStrategies) : undefined;
     const websiteNotes = String(websiteNoteTable?.rows[0]?.content || "");
 
     const comparison = buildPerformanceComparison(currentCampaignRows.length ? currentCampaignRows : keywordRows, previousCampaignRows);

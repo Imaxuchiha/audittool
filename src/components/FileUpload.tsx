@@ -36,12 +36,13 @@ export const uploadSlots = Object.keys(labels) as UploadSlot[];
 interface FileUploadProps {
   files: Partial<Record<UploadSlot, File>>;
   onChange: (slot: UploadSlot, file?: File) => void;
+  slots?: UploadSlot[];
 }
 
-export function FileUpload({ files, onChange }: FileUploadProps) {
+export function FileUpload({ files, onChange, slots = uploadSlots }: FileUploadProps) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      {uploadSlots.map((slot) => {
+      {slots.map((slot) => {
         const file = files[slot];
         const Icon = slot === "website_notes" ? FileText : FileSpreadsheet;
         return (
