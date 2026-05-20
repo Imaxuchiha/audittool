@@ -4,4 +4,4 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NEXT_PUBLIC_SITE_URL = "https://www.campaignscan.nl"
+  NEXT_PUBLIC_SITE_URL = "https://campaignscan.nl"
