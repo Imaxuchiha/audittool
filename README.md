@@ -35,6 +35,7 @@ Use the files in `/samples`:
 - `ga4_pages.csv`
 - `ga4_events.csv`
 - `search_console_queries.csv`
+- `product_source.csv`
 - `website_notes.txt`
 
 The sample campaigns file includes both `Current` and `Previous` rows in the `Period` column so the app can calculate period-over-period differences.
@@ -52,7 +53,85 @@ The app accepts:
 - `ga4_pages.csv` or `.xlsx`
 - `ga4_events.csv` or `.xlsx`
 - `search_console_queries.csv` or `.xlsx`
+- `product_source.csv` or `.xlsx`
 - `website_notes.md` or `.txt`
+
+## Product source and labelizer
+
+The product source upload accepts a product feed or spreadsheet with columns such as:
+
+- `id`
+- `title`
+- `brand`
+- `product type`
+- `price`
+- `availability`
+- `margin`
+
+Before generating the audit, choose what each Google Shopping custom label should represent. Defaults are:
+
+- `custom_label_0`: priority label such as `priority_scale`, `priority_standard`, `priority_protect_margin`, or `priority_exclude`
+- `custom_label_1`: price bucket
+- `custom_label_2`: margin bucket
+- `custom_label_3`: category bucket
+- `custom_label_4`: stock bucket
+
+You can also choose brand, sale/promo, season, shipping, performance, gender, size, release year, or leave a label empty.
+
+This is meant as a starter labelizer for Google Merchant Center / Shopping / PMax workflows. The rules live in `src/lib/analyze/productLabelizer.ts` and can be adjusted per agency strategy.
+
+Custom label inspiration:
+
+- Google Merchant Center custom labels: `https://support.google.com/merchants/answer/6324473`
+- DataFeedWatch custom label examples: `https://www.datafeedwatch.com/blog/custom-labels-google-shopping`
+- Solutions 8 custom label guidance: `https://sol8.com/google-ads-custom-labels/`
+- PPC community discussion about supplemental feeds / labelizers: `https://www.reddit.com/r/PPC/comments/1oj51xm/custom_labels_for_products_google_ads_google/`
+
+## Information sources
+
+V1 only uses files that the user uploads and manual notes that the strategist enters. It does not pull data from Google directly.
+
+The audit can use:
+
+- Google Ads campaign exports
+- Google Ads search term exports
+- Google Ads keyword exports
+- Google Ads change history exports
+- Google Ads conversion exports
+- Google Ads asset exports
+- GA4 pages and events exports
+- Search Console query exports
+- Product source/feed uploads
+- Website notes in `.txt` or `.md`
+- Manual strategist notes from the form
+
+The tool stores nothing permanently in v1.
+
+## Sharing with employees
+
+For a small internal team, the easiest option is to run it on one machine or server and share the local/network URL.
+
+Local use:
+
+```bash
+open-app.bat
+```
+
+Keep the command window open and use `http://localhost:3000`.
+
+Internal network use:
+
+1. Run the app on a shared office machine or small Windows server.
+2. Use the network URL shown by Next.js, for example `http://192.168.x.x:3000`.
+3. Give employees that URL.
+4. Make sure the machine firewall allows inbound traffic on port `3000`.
+
+More professional deployment:
+
+1. Deploy to Vercel, Render, Railway, Azure App Service, or a small VPS.
+2. Put it behind login before uploading client data.
+3. Add HTTPS.
+4. Add a clear internal policy: uploads are processed temporarily and should not contain unnecessary personal data.
 
 ## Data storage
 

@@ -1,0 +1,6 @@
+id,title,brand,product type,price,availability,margin
+SKU-001,Trail Runner Pro,RunPeak,Running Shoes > Trail,129.95,in stock,0.46
+SKU-002,Daily Road Shoe,RunPeak,Running Shoes > Road,89.95,in stock,0.34
+SKU-003,Entry Sneaker,RunPeak,Sneakers,39.95,in stock,0.18
+SKU-004,Carbon Race Shoe,RunPeak,Running Shoes > Race,289.95,in stock,0.52
+SKU-005,Winter Trail GTX,RunPeak,Running Shoes > Trail,179.95,out of stock,0.44

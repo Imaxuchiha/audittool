@@ -1,0 +1,6 @@
+Event name,Event count,Users,Conversions
+page_view,42000,12800,0
+add_to_cart,1100,760,0
+begin_checkout,420,330,0
+purchase,210,198,210
+generate_lead,52,49,52
