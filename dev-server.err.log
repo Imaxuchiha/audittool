@@ -1,0 +1,93 @@
+ ⨯ Error: Cannot find module './331.js'
+Require stack:
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\webpack-runtime.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\api\audit\generate\route.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\require.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\load-components.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\utils.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\options.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\index.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\next.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\page.js:2:7741)
+    at Object.<anonymous> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\page.js:2:7794) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './331.js'
+Require stack:
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\webpack-runtime.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\api\audit\export\route.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\require.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\load-components.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\utils.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\options.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\index.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\next.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\audits\new\page.js:42:11945)
+    at Object.<anonymous> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\audits\new\page.js:42:11998) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/audits/new'
+}
+ ⨯ Error: Cannot find module './611.js'
+Require stack:
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\webpack-runtime.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\api\audit\export\route.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\require.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\load-components.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\utils.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\options.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\index.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\next.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\pages\_document.js:1:321)
+    at Object.<anonymous> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\pages\_document.js:1:366) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ Error: Cannot find module './331.js'
+Require stack:
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\webpack-runtime.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\api\audit\export\route.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\require.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\load-components.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\utils.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\options.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\index.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\next.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\audits\new\page.js:42:11945)
+    at Object.<anonymous> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\audits\new\page.js:42:11998) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/audits/new'
+}
+ ⨯ Error: Cannot find module './611.js'
+Require stack:
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\webpack-runtime.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\app\api\audit\export\route.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\require.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\load-components.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\utils.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\options.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\swc\index.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\config.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\next.js
+- C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\pages\_document.js:1:321)
+    at Object.<anonymous> (C:\Users\maxmi\Documents\Codex\2026-05-18\you-are-building-an-internal-google\.next\server\pages\_document.js:1:366) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}

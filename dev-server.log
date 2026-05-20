@@ -1,0 +1,50 @@
+
+> google-ads-audit-generator@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.18
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.186:3000
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 1633ms
+ ○ Compiling / ...
+ ✓ Compiled / in 771ms (591 modules)
+ GET / 200 in 1180ms
+ GET / 200 in 80ms
+ ○ Compiling /api/audit/generate ...
+ ✓ Compiled /api/audit/generate in 1921ms (636 modules)
+ POST /api/audit/generate 200 in 2546ms
+ GET / 200 in 204ms
+ ○ Compiling /audits/new ...
+ ✓ Compiled /audits/new in 632ms (662 modules)
+ GET /audits/new 200 in 770ms
+ GET /audits/new 200 in 188ms
+ ✓ Compiled in 232ms (392 modules)
+ GET / 200 in 799ms
+ ○ Compiling /api/audit/generate ...
+ ✓ Compiled /api/audit/generate in 1081ms (422 modules)
+ POST /api/audit/generate 200 in 1759ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.9s (993 modules)
+ GET /?code=a55bef6c-126b-43d7-8d0d-4c4ad40ceb51 500 in 4154ms
+ GET / 200 in 1501ms
+ GET /audits/new 200 in 183ms
+ GET / 200 in 113ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 808ms (984 modules)
+ GET /samples/google_ads_campaigns.csv 404 in 1063ms
+ ✓ Compiled in 3.2s (993 modules)
+ ✓ Compiled in 677ms (993 modules)
+ ✓ Compiled in 885ms (999 modules)
+ GET / 200 in 132ms
+ ○ Compiling /api/audit/generate ...
+ ✓ Compiled /api/audit/generate in 2.5s (619 modules)
+ POST /api/audit/generate 200 in 3041ms
+ ✓ Compiled /api/audit/export in 389ms (1031 modules)
+ POST /api/audit/export 200 in 570ms
+ GET /audits/new 500 in 2705ms
+ GET /audits/new 500 in 125ms
+[?25h
