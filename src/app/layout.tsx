@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     template: "%s | CampaignScan"
   },
   description: "Upload PPC exports and generate practical Google Ads audit reports.",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/favicon.svg", type: "image/svg+xml" }]
+  },
   alternates: {
     canonical: "/"
   },

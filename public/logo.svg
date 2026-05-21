@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" role="img" aria-label="CampaignScan">
+  <rect x="8" y="8" width="164" height="164" rx="38" fill="#111827"/>
+  <path d="M58 109c10 15 28 25 48 25 16 0 30-6 41-16" fill="none" stroke="#ffffff" stroke-width="15" stroke-linecap="round"/>
+  <path d="M137 69c-11-13-27-22-46-22-17 0-32 7-43 18" fill="none" stroke="#ffffff" stroke-width="15" stroke-linecap="round"/>
+  <path d="M58 65l-3-28M58 65H30" fill="none" stroke="#60a5fa" stroke-width="11" stroke-linecap="round"/>
+  <path d="M137 118l3 28M137 118h28" fill="none" stroke="#60a5fa" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="96" cy="91" r="22" fill="#60a5fa"/>
+  <path d="M86 91h20M96 81v20" stroke="#111827" stroke-width="9" stroke-linecap="round"/>
+  <text x="205" y="81" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="750" letter-spacing="-1">
+    CampaignScan
+  </text>
+  <text x="207" y="119" fill="#6b7280" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="500">
+    Google Ads audit generator
+  </text>
+</svg>

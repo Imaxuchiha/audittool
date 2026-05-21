@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { ArrowRight, FileText, ShieldCheck, Upload } from "lucide-react";
 
 export default function DashboardPage() {
@@ -7,7 +8,9 @@ export default function DashboardPage() {
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-12">
         <div className="max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">Internal PPC tool</p>
-          <h1 className="mt-4 text-5xl font-semibold tracking-tight text-ink">CampaignScan</h1>
+          <div className="mt-4">
+            <Logo size="lg" />
+          </div>
           <p className="mt-5 text-lg leading-8 text-gray-600">
             Upload Google Ads, GA4, Search Console, product feeds, and website notes. Generate a practical agency-style audit report and labeled product feed without connecting Google OAuth in v1.
           </p>

@@ -1,15 +1,19 @@
 import Link from "next/link";
 import { AuditForm } from "@/components/AuditForm";
+import { Logo } from "@/components/Logo";
 
 export default function NewAuditPage() {
   return (
     <main className="min-h-screen bg-mist">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <Link href="/" className="text-sm font-semibold text-gray-600 hover:text-ink">
-            Back to dashboard
-          </Link>
-          <p className="text-sm text-gray-500">V1: CSV/XLSX uploads only</p>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Logo />
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm font-semibold text-gray-600 hover:text-ink">
+              Back to dashboard
+            </Link>
+            <p className="text-sm text-gray-500">V1: CSV/XLSX uploads only</p>
+          </div>
         </div>
         <AuditForm />
       </div>
