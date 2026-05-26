@@ -93,6 +93,7 @@ export function buildPerformanceComparison(currentRows: MetricRow[], previousRow
     previous,
     delta: diff(current, previous),
     deltaPercent: diffPercent(current, previous),
+    hasPreviousData: previousRows.length > 0,
     topCampaigns: [...campaigns]
       .filter((row) => row.spend > 0)
       .sort((a, b) => b.conversionValue - a.conversionValue || b.conversions - a.conversions || b.roas - a.roas)

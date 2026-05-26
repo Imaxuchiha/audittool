@@ -8,13 +8,16 @@ import { Loader2, Sparkles } from "lucide-react";
 
 const initialInput: AuditInput = {
   clientName: "",
+  contactEmail: "",
   websiteUrl: "",
   language: "en",
   currentPeriod: "",
   previousPeriod: "",
+  compareWithPreviousPeriod: false,
   businessType: "lead_gen",
   mainGoal: "leads",
   strategistNotes: "",
+  leadConsent: false,
   useProductLabelizer: false,
   labelStrategies: {
     custom_label_0: "priority",
@@ -42,6 +45,13 @@ const labelStrategyOptions: Array<{ value: LabelStrategy; label: string; help: s
   { value: "none", label: "Do not fill", help: "Leaves this custom label empty." }
 ];
 
+interface EmailStatus {
+  enabled: boolean;
+  leadEmailSent: boolean;
+  ownerEmailSent: boolean;
+  error?: string;
+}
+
 export function AuditForm() {
   const [input, setInput] = useState<AuditInput>(initialInput);
   const [files, setFiles] = useState<Partial<Record<UploadSlot, File>>>({});
@@ -53,6 +63,8 @@ export function AuditForm() {
   const [parsedFiles, setParsedFiles] = useState<ParsedFileSummary[]>([]);
   const [status, setStatus] = useState<"idle" | "parsing" | "ready" | "error">("idle");
   const [error, setError] = useState<string>();
+  const [leadSaved, setLeadSaved] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>();
   const activeUploadSlots = uploadSlots.filter((slot) => input.useProductLabelizer || slot !== "product_source");
 
   function update<K extends keyof AuditInput>(key: K, value: AuditInput[K]) {
@@ -73,6 +85,14 @@ export function AuditForm() {
     setFiles((current) => ({ ...current, [slot]: file }));
   }
 
+  function toggleComparison(enabled: boolean) {
+    setInput((current) => ({
+      ...current,
+      compareWithPreviousPeriod: enabled,
+      previousPeriod: enabled ? current.previousPeriod : ""
+    }));
+  }
+
   function toggleProductLabelizer(enabled: boolean) {
     setInput((current) => ({ ...current, useProductLabelizer: enabled }));
 
@@ -87,10 +107,41 @@ export function AuditForm() {
     }
   }
 
+  async function saveLeadToNetlifyForms(nextParsedFiles: ParsedFileSummary[]) {
+    try {
+      const body = new URLSearchParams({
+        "form-name": "campaignscan-leads",
+        email: input.contactEmail,
+        client_name: input.clientName,
+        website_url: input.websiteUrl,
+        business_type: input.businessType,
+        main_goal: input.mainGoal,
+        audit_language: input.language,
+        current_period: input.currentPeriod,
+        previous_period: input.previousPeriod,
+        consent: input.leadConsent ? "yes" : "no",
+        uploaded_files: nextParsedFiles.map((file) => file.fileName).join(", "),
+        submitted_at: new Date().toISOString()
+      });
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+      });
+
+      setLeadSaved(response.ok);
+    } catch {
+      setLeadSaved(false);
+    }
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("parsing");
     setError(undefined);
+    setLeadSaved(false);
+    setEmailStatus(undefined);
 
     const formData = new FormData();
     Object.entries(input).forEach(([key, value]) => {
@@ -123,16 +174,62 @@ export function AuditForm() {
     setLabeledProductsBase64(payload.labeledProductsBase64);
     setLabeledProductsFileName(payload.labeledProductsFileName);
     setParsedFiles(payload.parsedFiles || []);
+    setEmailStatus(payload.emailStatus);
     setStatus("ready");
+    void saveLeadToNetlifyForms(payload.parsedFiles || []);
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <>
+      <form name="campaignscan-leads" data-netlify="true" hidden>
+        <input type="hidden" name="form-name" value="campaignscan-leads" />
+        <input type="email" name="email" />
+        <input type="text" name="client_name" />
+        <input type="text" name="website_url" />
+        <input type="text" name="business_type" />
+        <input type="text" name="main_goal" />
+        <input type="text" name="audit_language" />
+        <input type="text" name="current_period" />
+        <input type="text" name="previous_period" />
+        <input type="text" name="consent" />
+        <input type="text" name="uploaded_files" />
+        <input type="text" name="submitted_at" />
+      </form>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
       <form onSubmit={submit} className="rounded-lg border border-line bg-white p-6 shadow-soft">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">New audit</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink">Upload exports, get a strategist-grade report.</h1>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-lg border border-line bg-mist p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Send report to</h2>
+          <div className="mt-3 grid gap-3">
+            <label className="grid gap-1 text-sm font-medium text-ink">
+              Email address
+              <input
+                required
+                type="email"
+                value={input.contactEmail}
+                onChange={(event) => update("contactEmail", event.target.value)}
+                placeholder="you@company.com"
+                className="rounded-md border border-line bg-white px-3 py-2"
+              />
+            </label>
+            <label className="flex gap-3 rounded-md border border-line bg-white p-3 text-sm leading-6 text-gray-700">
+              <input
+                required
+                type="checkbox"
+                checked={input.leadConsent}
+                onChange={(event) => update("leadConsent", event.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-line"
+              />
+              <span>
+                I agree that Adsvantage may store this email address and contact me about this audit and relevant PPC follow-up.
+              </span>
+            </label>
           </div>
         </div>
 
@@ -163,13 +260,39 @@ export function AuditForm() {
             </select>
           </label>
           <label className="grid gap-1 text-sm font-medium text-ink">
-            Current period
+            Current period <span className="font-normal text-gray-500">(optional)</span>
             <input placeholder="Apr 1 - Apr 30, 2026" value={input.currentPeriod} onChange={(event) => update("currentPeriod", event.target.value)} className="rounded-md border border-line px-3 py-2" />
           </label>
-          <label className="grid gap-1 text-sm font-medium text-ink">
-            Previous comparison period
-            <input placeholder="Mar 1 - Mar 31, 2026" value={input.previousPeriod} onChange={(event) => update("previousPeriod", event.target.value)} className="rounded-md border border-line px-3 py-2" />
-          </label>
+          <div className="grid gap-3 rounded-lg border border-line bg-mist p-3 text-sm font-medium text-ink">
+            <div className="flex items-center justify-between gap-3">
+              <span>Compare with previous period?</span>
+              <button
+                type="button"
+                aria-pressed={input.compareWithPreviousPeriod}
+                onClick={() => toggleComparison(!input.compareWithPreviousPeriod)}
+                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                  input.compareWithPreviousPeriod ? "border-ink bg-ink text-white" : "border-line bg-white text-gray-600 hover:border-ink"
+                }`}
+              >
+                {input.compareWithPreviousPeriod ? "Yes" : "No"}
+              </button>
+            </div>
+            {input.compareWithPreviousPeriod ? (
+              <label className="grid gap-1">
+                Previous comparison period <span className="font-normal text-gray-500">(optional label)</span>
+                <input
+                  placeholder="Mar 1 - Mar 31, 2026"
+                  value={input.previousPeriod}
+                  onChange={(event) => update("previousPeriod", event.target.value)}
+                  className="rounded-md border border-line bg-white px-3 py-2"
+                />
+              </label>
+            ) : (
+              <p className="text-xs font-normal leading-5 text-gray-500">
+                Leave this off for a quick current-state audit. The report will not force a period comparison.
+              </p>
+            )}
+          </div>
           <label className="grid gap-1 text-sm font-medium text-ink sm:col-span-2">
             Main goal
             <select value={input.mainGoal} onChange={(event) => update("mainGoal", event.target.value as AuditInput["mainGoal"])} className="rounded-md border border-line px-3 py-2">
@@ -253,6 +376,15 @@ export function AuditForm() {
         </div>
 
         {error ? <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}
+        {leadSaved ? <p className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-700">Lead saved for Adsvantage follow-up.</p> : null}
+        {emailStatus?.leadEmailSent ? (
+          <p className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-700">The audit report was emailed to {input.contactEmail}.</p>
+        ) : null}
+        {emailStatus?.enabled && emailStatus.error ? (
+          <p className="mt-4 rounded-md bg-amber-50 p-3 text-sm text-amber-700">
+            Report generated, but email sending needs attention: {emailStatus.error}
+          </p>
+        ) : null}
 
         <button
           type="submit"
@@ -260,7 +392,7 @@ export function AuditForm() {
           className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === "parsing" ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
-          {status === "parsing" ? "Parsing exports and writing report" : "Generate audit report"}
+          {status === "parsing" ? "Parsing exports and writing report" : "Generate and email audit report"}
         </button>
       </form>
 
@@ -274,6 +406,7 @@ export function AuditForm() {
         parsedFiles={parsedFiles}
         onReportChange={setReport}
       />
-    </div>
+      </div>
+    </>
   );
 }

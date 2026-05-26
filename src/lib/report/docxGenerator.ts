@@ -44,8 +44,8 @@ function percent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function metricTable(current: SummaryMetrics, previous: SummaryMetrics): Table {
-  const rows: Array<[string, string, string]> = [
+function metricTable(current: SummaryMetrics, previous: SummaryMetrics, hasPreviousData: boolean): Table {
+  const rows = [
     ["Spend", money(current.spend), money(previous.spend)],
     ["Clicks", current.clicks.toFixed(0), previous.clicks.toFixed(0)],
     ["Impressions", current.impressions.toFixed(0), previous.impressions.toFixed(0)],
@@ -57,11 +57,13 @@ function metricTable(current: SummaryMetrics, previous: SummaryMetrics): Table {
     ["ROAS", current.roas.toFixed(1), previous.roas.toFixed(1)]
   ];
 
+  const header = hasPreviousData ? ["Metric", "Current", "Previous"] : ["Metric", "Current"];
+
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [
       new TableRow({
-        children: ["Metric", "Current", "Previous"].map(
+        children: header.map(
           (cell) =>
             new TableCell({
               children: [new Paragraph({ children: [new TextRun({ text: cell, bold: true })] })]
@@ -71,7 +73,9 @@ function metricTable(current: SummaryMetrics, previous: SummaryMetrics): Table {
       ...rows.map(
         ([metric, currentValue, previousValue]) =>
           new TableRow({
-            children: [metric, currentValue, previousValue].map((cell) => new TableCell({ children: [new Paragraph(cell)] }))
+            children: (hasPreviousData ? [metric, currentValue, previousValue] : [metric, currentValue]).map(
+              (cell) => new TableCell({ children: [new Paragraph(cell)] })
+            )
           })
       )
     ]
@@ -121,7 +125,7 @@ export async function generateAuditDocx(input: AuditInput, report: AuditReport):
           ...report.executiveSummary.map(paragraph),
           heading("2. Performance Comparison"),
           ...report.performanceNarrative.map(paragraph),
-          metricTable(report.comparison.current, report.comparison.previous),
+          metricTable(report.comparison.current, report.comparison.previous, report.comparison.hasPreviousData),
           heading("3. Campaign & Budget Analysis"),
           ...report.campaignBudgetAnalysis.map(paragraph),
           heading("4. Search Terms & Intent Analysis"),

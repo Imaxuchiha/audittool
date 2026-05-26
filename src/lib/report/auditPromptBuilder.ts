@@ -10,7 +10,13 @@ function money(value: number): string {
 
 function metricLine(comparison: PerformanceComparison): string {
   const { current, deltaPercent } = comparison;
-  return `${money(current.spend)} spend, ${current.clicks.toFixed(0)} clicks, ${percent(current.ctr)} CTR, ${current.conversions.toFixed(1)} conversions, ${money(current.cpa)} CPA and ${current.roas.toFixed(1)} ROAS. Spend moved ${percent(deltaPercent.spend)}, conversions ${percent(deltaPercent.conversions)} and ROAS ${percent(deltaPercent.roas)} versus the comparison period.`;
+  const currentLine = `${money(current.spend)} spend, ${current.clicks.toFixed(0)} clicks, ${percent(current.ctr)} CTR, ${current.conversions.toFixed(1)} conversions, ${money(current.cpa)} CPA and ${current.roas.toFixed(1)} ROAS.`;
+
+  if (!comparison.hasPreviousData) {
+    return `${currentLine} No previous period was used, so this is a current-state read rather than a period-over-period comparison.`;
+  }
+
+  return `${currentLine} Spend moved ${percent(deltaPercent.spend)}, conversions ${percent(deltaPercent.conversions)} and ROAS ${percent(deltaPercent.roas)} versus the comparison period.`;
 }
 
 function campaignName(row: MetricRow): string {
@@ -35,6 +41,14 @@ export function buildAuditReport(
     input.language === "nl"
       ? "Dit rapport is in het Nederlands geschreven, met een directe PPC-strategietoon."
       : "This report is written in English, with a direct PPC strategist tone.";
+
+  const periodLineNl = input.compareWithPreviousPeriod
+    ? `Huidige periode: ${input.currentPeriod || "niet opgegeven"}. Vergelijkingsperiode: ${input.previousPeriod || "niet opgegeven"}.`
+    : `Huidige periode: ${input.currentPeriod || "niet opgegeven"}. Er is geen vergelijkingsperiode gebruikt.`;
+
+  const periodLineEn = input.compareWithPreviousPeriod
+    ? `Current period: ${input.currentPeriod || "not specified"}. Previous period: ${input.previousPeriod || "not specified"}.`
+    : `Current period: ${input.currentPeriod || "not specified"}. No previous period was used.`;
 
   const topCampaigns = comparison.topCampaigns
     .slice(0, 3)
@@ -75,19 +89,19 @@ export function buildAuditReport(
       comparison,
       painpoints,
       executiveSummary: [
-        "Dit rapport is geschreven in een directe PPC-strategietoon, met focus op commerciële impact in plaats van losse kanaalstatistieken.",
+        "Dit rapport is geschreven in een directe PPC-strategietoon, met focus op commerciele impact in plaats van losse kanaalstatistieken.",
         `Voor ${input.clientName} is het huidige beeld: ${metricLine(comparison)}`,
         topPainpoints.length
           ? `De belangrijkste blokkades zijn ${topPainpoints.map((item) => item.title.toLowerCase()).join(", ")}. Dit zijn de punten die waarschijnlijk het meeste effect hebben op winst, leadkwaliteit of schaalbaarheid.`
-          : "De geüploade data laat geen duidelijke alarmsituatie zien. Verrijk de audit met zoektermen, conversiedata en landingspagina-notities om de aanbevelingen scherper te maken.",
-        input.strategistNotes ? `Strategische notitie: ${input.strategistNotes}` : "Er zijn geen strategische notities toegevoegd, dus het rapport leunt volledig op de geüploade exports."
+          : "De geuploade data laat geen duidelijke alarmsituatie zien. Verrijk de audit met zoektermen, conversiedata en landingspagina-notities om de aanbevelingen scherper te maken.",
+        input.strategistNotes ? `Strategische notitie: ${input.strategistNotes}` : "Er zijn geen strategische notities toegevoegd, dus het rapport leunt volledig op de geuploade exports."
       ],
       performanceNarrative: [
-        `Huidige periode: ${input.currentPeriod || "niet opgegeven"}. Vergelijkingsperiode: ${input.previousPeriod || "niet opgegeven"}.`,
+        periodLineNl,
         `Het account haalde ${comparison.current.clicks.toFixed(0)} klikken uit ${comparison.current.impressions.toFixed(0)} vertoningen, met ${percent(comparison.current.ctr)} CTR. De gemiddelde CPC is ${money(comparison.current.avgCpc)} en de conversieratio is ${percent(comparison.current.conversionRate)}.`,
-        comparison.previous.spend
-          ? `Ten opzichte van de vorige periode veranderde spend met ${percent(comparison.deltaPercent.spend)}, conversies met ${percent(comparison.deltaPercent.conversions)}, CPA met ${percent(comparison.deltaPercent.cpa)} en ROAS met ${percent(comparison.deltaPercent.roas)}. De commerciële vraag is of extra budget betere vraag koopt, of vooral meer volume zonder betere kwaliteit.`
-          : "Er zijn geen vorige-periode rijen herkend. Lees dit daarom als een huidige-status audit, niet als volledige periode-op-periode diagnose."
+        comparison.hasPreviousData
+          ? `Ten opzichte van de vorige periode veranderde spend met ${percent(comparison.deltaPercent.spend)}, conversies met ${percent(comparison.deltaPercent.conversions)}, CPA met ${percent(comparison.deltaPercent.cpa)} en ROAS met ${percent(comparison.deltaPercent.roas)}. De commerciele vraag is of extra budget betere vraag koopt, of vooral meer volume zonder betere kwaliteit.`
+          : "Lees dit als een huidige-status audit. Dat is prima voor een eerste scan: de focus ligt dan op rendement, budgetverspilling, zoekintentie, tracking en CRO-signalen binnen de geuploade data."
       ],
       campaignBudgetAnalysis: [
         topCampaigns.length ? `Best presterende campagnes: ${topCampaigns.join("; ")}.` : "Er is niet genoeg campagneniveau-data om betrouwbare winnaars aan te wijzen.",
@@ -97,17 +111,17 @@ export function buildAuditReport(
       ],
       searchTermsIntentAnalysis: [
         highIntentTerms.length
-          ? `Zoektermen met sterke intentie: ${highIntentTerms.join(", ")}. Deze termen laten de kortste route zien van zoekvraag naar commerciële actie.`
-          : "Er zijn geen duidelijke zoekterm-winnaars zichtbaar, of er is geen zoektermenbestand geüpload.",
+          ? `Zoektermen met sterke intentie: ${highIntentTerms.join(", ")}. Deze termen laten de kortste route zien van zoekvraag naar commerciele actie.`
+          : "Er zijn geen duidelijke zoekterm-winnaars zichtbaar, of er is geen zoektermenbestand geupload.",
         wastedTerms.length
           ? `Kandidaten voor negatieve zoekwoorden: ${wastedTerms.join(", ")}. Deze termen geven geld uit zonder zichtbare conversiewaarde.`
-          : "De zoektermdata laat geen opvallende verspilling zien, of er is geen zoektermenbestand geüpload.",
+          : "De zoektermdata laat geen opvallende verspilling zien, of er is geen zoektermenbestand geupload.",
         "Uitbreiding moet komen uit converterende zoekvragen, varianten met koopintentie en thema's waar de landingspagina de intentie direct kan beantwoorden."
       ],
       changeHistoryHygiene: [
         changeRows.length
-          ? `${changeRows.length} change-history regels zijn geüpload. Controleer vooral wijzigingen rond dagen waarop spend, CPA of ROAS sterk bewoog.`
-          : "Er is geen change-history export geüpload. Daardoor is het lastiger om prestatiebewegingen betrouwbaar te verklaren.",
+          ? `${changeRows.length} change-history regels zijn geupload. Controleer vooral wijzigingen rond dagen waarop spend, CPA of ROAS sterk bewoog.`
+          : "Er is geen change-history export geupload. Daardoor is het lastiger om prestatiebewegingen betrouwbaar te verklaren.",
         "Een gezond account heeft genoeg activiteit om actief beheer te bewijzen, maar niet zoveel overlap dat geen enkele test nog zuiver te lezen is.",
         painpoints.find((item) => item.section === "tracking")
           ? "Conversietracking moet eerst kloppen voordat budgetbeslissingen agressiever worden."
@@ -116,7 +130,7 @@ export function buildAuditReport(
       croNotes: [
         websiteNotes
           ? `Website-notities uit upload: ${websiteNotes.slice(0, 700)}${websiteNotes.length > 700 ? "..." : ""}`
-          : `Er is geen website-notitiebestand geüpload. Voor ${input.businessType.replace("_", " ")} moet de CRO-check kijken naar CTA-duidelijkheid, vertrouwen, mobiele frictie, laadsnelheidsperceptie en formulier- of checkoutdrempels.`,
+          : `Er is geen website-notitiebestand geupload. Voor ${input.businessType.replace("_", " ")} moet de CRO-check kijken naar CTA-duidelijkheid, vertrouwen, mobiele frictie, laadsnelheidsperceptie en formulier- of checkoutdrempels.`,
         input.businessType === "ecommerce"
           ? "Voor ecommerce: controleer productpagina-vertrouwen, levertijd, prijspositie, reviews, voorraad/varianten, checkout-stappen en of Shopping/PMax verkeer op de juiste categorie of productpagina landt."
           : "Voor leadgeneratie: controleer de belofte boven de vouw, formulierlengte, bewijs, call tracking, bedanktpagina-events en of de pagina exact aansluit op de advertentiebelofte."
@@ -139,11 +153,11 @@ export function buildAuditReport(
       input.strategistNotes ? `Strategist note: ${input.strategistNotes}` : "No strategist notes were added, so the report leans only on the uploaded exports."
     ],
     performanceNarrative: [
-      `Current period: ${input.currentPeriod || "not specified"}. Previous period: ${input.previousPeriod || "not specified"}.`,
+      periodLineEn,
       `The account generated ${comparison.current.clicks.toFixed(0)} clicks from ${comparison.current.impressions.toFixed(0)} impressions at ${percent(comparison.current.ctr)} CTR. Average CPC is ${money(comparison.current.avgCpc)} and conversion rate is ${percent(comparison.current.conversionRate)}.`,
-      comparison.previous.spend
+      comparison.hasPreviousData
         ? `Compared with the previous period, spend changed by ${percent(comparison.deltaPercent.spend)}, conversions by ${percent(comparison.deltaPercent.conversions)}, CPA by ${percent(comparison.deltaPercent.cpa)} and ROAS by ${percent(comparison.deltaPercent.roas)}. The key question is whether extra spend is buying better demand or simply more volume.`
-        : "No previous-period rows were uploaded or detected. Treat the report as a current-state audit rather than a complete period-over-period diagnosis."
+        : "Treat this as a current-state audit. That is enough for a first scan: the report focuses on efficiency, wasted spend, search intent, tracking signals, and CRO issues in the uploaded data."
     ],
     campaignBudgetAnalysis: [
       topCampaigns.length ? `Best performers: ${topCampaigns.join("; ")}.` : "There is not enough campaign-level data to name reliable winners.",

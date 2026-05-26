@@ -67,7 +67,7 @@ function reportHtml(input: AuditInput, report: AuditReport) {
         <h1>${escapeHtml(report.title)}</h1>
         <p class="meta">${escapeHtml(input.websiteUrl || "Website not specified")} | ${escapeHtml(input.currentPeriod || "Current period not specified")}</p>
         ${section("1. Executive Summary", report.executiveSummary)}
-        ${section("2. Performance Comparison", report.performanceNarrative)}
+        ${section(report.comparison.hasPreviousData ? "2. Performance Comparison" : "2. Performance Snapshot", report.performanceNarrative)}
         ${section("3. Campaign & Budget Analysis", report.campaignBudgetAnalysis)}
         ${section("4. Search Terms & Intent Analysis", report.searchTermsIntentAnalysis)}
         ${section("5. Change History & Account Hygiene", report.changeHistoryHygiene)}
@@ -288,7 +288,7 @@ export function ReportPreview({
         </section>
 
         <SectionEditor title="1. Executive Summary" rows={report.executiveSummary} onChange={(rows) => updateReport({ executiveSummary: rows })} />
-        <SectionEditor title="2. Performance Comparison" rows={report.performanceNarrative} onChange={(rows) => updateReport({ performanceNarrative: rows })} />
+        <SectionEditor title={report.comparison.hasPreviousData ? "2. Performance Comparison" : "2. Performance Snapshot"} rows={report.performanceNarrative} onChange={(rows) => updateReport({ performanceNarrative: rows })} />
         <SectionEditor title="3. Campaign & Budget Analysis" rows={report.campaignBudgetAnalysis} onChange={(rows) => updateReport({ campaignBudgetAnalysis: rows })} />
         <SectionEditor title="4. Search Terms & Intent Analysis" rows={report.searchTermsIntentAnalysis} onChange={(rows) => updateReport({ searchTermsIntentAnalysis: rows })} />
         <SectionEditor title="5. Change History & Account Hygiene" rows={report.changeHistoryHygiene} onChange={(rows) => updateReport({ changeHistoryHygiene: rows })} />
@@ -360,7 +360,7 @@ export function ReportPreview({
           </div>
           <p className="mt-3 flex items-center gap-2 text-xs text-gray-500">
             <FileDown size={14} />
-            DOCX export uses the edited text above. PDF uses the browser print dialog, so choose “Save as PDF”.
+            DOCX export uses the edited text above. PDF uses the browser print dialog, so choose "Save as PDF".
           </p>
         </section>
       </div>

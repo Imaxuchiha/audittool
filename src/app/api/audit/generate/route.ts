@@ -5,6 +5,7 @@ import { defaultLabelStrategies, labeledProductsToXlsxBase64, labelProducts } fr
 import { normalizeGoogleAdsRows } from "@/lib/normalize/googleAdsColumns";
 import { parseCsv } from "@/lib/parsers/csvParser";
 import { parseXlsx } from "@/lib/parsers/xlsxParser";
+import { sendAuditEmails } from "@/lib/email/auditMailer";
 import { buildAuditReport } from "@/lib/report/auditPromptBuilder";
 import { generateAuditDocx } from "@/lib/report/docxGenerator";
 import { AuditInput, RawTable, UploadSlot } from "@/lib/types/audit";
@@ -43,16 +44,23 @@ function auditInputFromForm(formData: FormData): AuditInput {
 
   return {
     clientName: field(formData, "clientName") || "Client",
+    contactEmail: field(formData, "contactEmail").toLowerCase(),
     websiteUrl: field(formData, "websiteUrl"),
     language: field(formData, "language") === "nl" ? "nl" : "en",
     currentPeriod: field(formData, "currentPeriod"),
     previousPeriod: field(formData, "previousPeriod"),
+    compareWithPreviousPeriod: field(formData, "compareWithPreviousPeriod") === "true",
     businessType: (field(formData, "businessType") || "lead_gen") as AuditInput["businessType"],
     mainGoal: (field(formData, "mainGoal") || "leads") as AuditInput["mainGoal"],
     strategistNotes: field(formData, "strategistNotes"),
+    leadConsent: field(formData, "leadConsent") === "true",
     useProductLabelizer: field(formData, "useProductLabelizer") === "true",
     labelStrategies
   };
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 async function parseFile(file: File, slot: UploadSlot): Promise<RawTable> {
@@ -84,6 +92,14 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const input = auditInputFromForm(formData);
 
+    if (!isValidEmail(input.contactEmail)) {
+      return NextResponse.json({ error: "Please enter a valid email address before generating the audit." }, { status: 400 });
+    }
+
+    if (!input.leadConsent) {
+      return NextResponse.json({ error: "Please confirm that Adsvantage may store and contact this email address." }, { status: 400 });
+    }
+
     const parsedTables: RawTable[] = [];
     for (const slot of uploadSlots) {
       const file = formData.get(slot);
@@ -99,11 +115,12 @@ export async function POST(request: NextRequest) {
     const productSourceTable = parsedTables.find((table) => table.slot === "product_source");
     const websiteNoteTable = parsedTables.find((table) => table.slot === "website_notes");
 
+    const campaignRows = campaignTable?.rows || [];
     const currentCampaignRows = normalizeGoogleAdsRows(
-      (campaignTable?.rows || []).filter((row) => !isPreviousRow(row, input.previousPeriod))
+      input.compareWithPreviousPeriod ? campaignRows.filter((row) => !isPreviousRow(row, input.previousPeriod)) : campaignRows
     );
     const previousCampaignRows = normalizeGoogleAdsRows(
-      (campaignTable?.rows || []).filter((row) => isPreviousRow(row, input.previousPeriod))
+      input.compareWithPreviousPeriod ? campaignRows.filter((row) => isPreviousRow(row, input.previousPeriod)) : []
     );
     const keywordRows = normalizeGoogleAdsRows(keywordsTable?.rows || []);
     const searchTermRows = normalizeGoogleAdsRows(searchTermsTable?.rows || []);
@@ -117,6 +134,9 @@ export async function POST(request: NextRequest) {
     const actions = buildPriorityActions(painpoints);
     const report = buildAuditReport(input, comparison, painpoints, actions, searchTermRows, changeRows, websiteNotes, productLabels?.summary);
     const docxBuffer = await generateAuditDocx(input, report);
+    const docxBase64 = docxBuffer.toString("base64");
+    const fileName = `${input.clientName.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "audit"}-google-ads-audit.docx`;
+    const emailStatus = await sendAuditEmails({ input, report, docxBase64, fileName });
 
     return NextResponse.json({
       report,
@@ -125,13 +145,14 @@ export async function POST(request: NextRequest) {
         fileName: table.fileName,
         rows: table.rows.length
       })),
-      docxBase64: docxBuffer.toString("base64"),
+      docxBase64,
+      emailStatus,
       labeledProductsBase64: productLabels ? labeledProductsToXlsxBase64(productLabels.rows) : undefined,
       labeledProductsFileName: productLabels
         ? `${input.clientName.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "audit"}-labeled-products.xlsx`
         : undefined,
       productLabelSummary: productLabels?.summary,
-      fileName: `${input.clientName.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "audit"}-google-ads-audit.docx`
+      fileName
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown audit generation error";

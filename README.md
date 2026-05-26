@@ -5,8 +5,11 @@ A clean internal Next.js app for PPC freelancers and agencies. Version 1 works f
 ## Features
 
 - Upload CSV or XLSX exports server-side.
+- Require an email address before generating the audit.
+- Save lead submissions through Netlify Forms when deployed on Netlify.
+- Optionally email the DOCX report to the lead and notify Adsvantage through Resend.
 - Normalize common Google Ads column names.
-- Calculate current vs previous period metrics when exports include a `Period` / `Segment` column.
+- Generate a current-state report without dates, or calculate current vs previous period metrics when enabled.
 - Detect practical PPC painpoints such as wasted spend, low CTR, high CPC with low CVR, PMax ROAS issues, tracking concerns, and inactivity risk.
 - Preview and edit the report in the browser.
 - Download a polished DOCX audit report from the edited preview.
@@ -39,7 +42,23 @@ Use the files in `/samples`:
 - `product_source.csv`
 - `website_notes.txt`
 
-The sample campaigns file includes both `Current` and `Previous` rows in the `Period` column so the app can calculate period-over-period differences.
+The sample campaigns file includes both `Current` and `Previous` rows in the `Period` column. Turn on comparison in the form if you want the app to split those rows into current vs previous period. Leave comparison off for a simple current-state audit.
+
+## Lead capture and email delivery
+
+The audit form requires an email address and consent before the report can be generated.
+
+On Netlify, leads are submitted to a hidden Netlify Form named `campaignscan-leads`. You can find submissions in the Netlify dashboard under Forms.
+
+Email delivery is optional and uses Resend through environment variables:
+
+```bash
+RESEND_API_KEY=...
+AUDIT_FROM_EMAIL="CampaignScan <info@adsvantage.nl>"
+AUDIT_OWNER_EMAIL=info@adsvantage.nl
+```
+
+Without `RESEND_API_KEY`, the app still generates the report and the user can download the DOCX/PDF in the browser. With `RESEND_API_KEY`, the DOCX report is emailed to the submitted email address and a lead notification is sent to `AUDIT_OWNER_EMAIL`.
 
 ## Upload slots
 
@@ -140,9 +159,19 @@ More professional deployment:
 
 V1 parses uploaded files in the API request and returns a preview plus DOCX file bytes. It does not write uploads or reports to disk, database, or object storage.
 
+Lead details are submitted to Netlify Forms when deployed on Netlify. If email delivery is enabled, Adsvantage also receives an owner notification email that can be used as a lead record.
+
 ## Environment variables
 
-No API key is required in v1.
+No API key is required for local report generation.
+
+For report email delivery:
+
+```bash
+RESEND_API_KEY=...
+AUDIT_FROM_EMAIL="CampaignScan <info@adsvantage.nl>"
+AUDIT_OWNER_EMAIL=info@adsvantage.nl
+```
 
 If you later add an LLM for report rewriting, keep keys in `.env.local`, for example:
 

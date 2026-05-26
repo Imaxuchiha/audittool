@@ -44,13 +44,16 @@ export type UploadSlot =
 
 export interface AuditInput {
   clientName: string;
+  contactEmail: string;
   websiteUrl: string;
   language: AuditLanguage;
   currentPeriod: string;
   previousPeriod: string;
+  compareWithPreviousPeriod: boolean;
   businessType: BusinessType;
   mainGoal: MainGoal;
   strategistNotes: string;
+  leadConsent: boolean;
   useProductLabelizer: boolean;
   labelStrategies: LabelStrategyConfig;
 }
@@ -104,6 +107,7 @@ export interface PerformanceComparison {
   previous: SummaryMetrics;
   delta: SummaryMetrics;
   deltaPercent: SummaryMetrics;
+  hasPreviousData: boolean;
   topCampaigns: MetricRow[];
   weakCampaigns: MetricRow[];
 }
