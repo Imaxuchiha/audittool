@@ -1,0 +1,11 @@
+Period,Campaign,Campaign type,Impressions,Clicks,Cost,Conversions,Conversion value,Search lost IS (budget),Search lost IS (rank)
+Current,Search - Brand,Search,12000,1550,820,92,13200,8,12
+Current,Search - Non Brand,Search,48000,2100,3900,38,7100,24,44
+Current,PMax - All Products,PMax,90000,2600,5200,31,6900,12,36
+Current,Display - Remarketing,Display,70000,900,780,4,550,0,55
+Current,Shopping - Top Sellers,Shopping,34000,1800,2400,62,15500,38,19
+Previous,Search - Brand,Search,10000,1310,700,86,12100,4,10
+Previous,Search - Non Brand,Search,52000,2300,3500,51,8500,18,35
+Previous,PMax - All Products,PMax,76000,2200,4100,42,9800,7,28
+Previous,Display - Remarketing,Display,60000,840,720,5,720,0,49
+Previous,Shopping - Top Sellers,Shopping,28000,1450,1900,47,11700,42,22

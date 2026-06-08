@@ -7,10 +7,10 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-KRC96G4Z
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://campaignscan.nl"),
   title: {
-    default: "CampaignScan",
+    default: "CampaignScan - Google Ads-accountscan",
     template: "%s | CampaignScan"
   },
-  description: "Upload PPC exports and generate practical Google Ads audit reports.",
+  description: "Upload je Google Ads-exports en ontvang een duidelijk rapport met verbeterpunten voor je account of webshopproducten.",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     shortcut: [{ url: "/favicon.svg", type: "image/svg+xml" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     canonical: "/"
   },
   openGraph: {
-    title: "CampaignScan",
-    description: "Upload PPC exports and generate practical Google Ads audit reports.",
+    title: "CampaignScan - Google Ads-accountscan",
+    description: "Upload je Google Ads-exports en ontvang een duidelijk rapport met verbeterpunten.",
     url: "/",
     siteName: "CampaignScan",
     type: "website"
@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="nl">
       <body>
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -47,11 +47,14 @@ export default function RootLayout({
         </Script>
         {children}
         <footer className="border-t border-line bg-white px-6 py-5 text-center text-sm text-gray-500">
-          CampaignScan is een project van{" "}
+          <span>CampaignScan is een project van </span>
           <a href="https://www.adsvantage.nl/" className="font-semibold text-ink hover:underline">
             Adsvantage
           </a>
-          .
+          <span className="mx-2">.</span>
+          <a href="/privacy" className="font-semibold text-ink hover:underline">
+            Privacyuitleg
+          </a>
         </footer>
       </body>
     </html>

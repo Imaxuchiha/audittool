@@ -11,6 +11,7 @@ interface ReportPreviewProps {
   fileName?: string;
   labeledProductsBase64?: string;
   labeledProductsFileName?: string;
+  labeledProductsMimeType?: string;
   parsedFiles?: ParsedFileSummary[];
   onReportChange: (report: AuditReport) => void;
 }
@@ -65,22 +66,22 @@ function reportHtml(input: AuditInput, report: AuditReport) {
       </head>
       <body>
         <h1>${escapeHtml(report.title)}</h1>
-        <p class="meta">${escapeHtml(input.websiteUrl || "Website not specified")} | ${escapeHtml(input.currentPeriod || "Current period not specified")}</p>
-        ${section("1. Executive Summary", report.executiveSummary)}
-        ${section(report.comparison.hasPreviousData ? "2. Performance Comparison" : "2. Performance Snapshot", report.performanceNarrative)}
-        ${section("3. Campaign & Budget Analysis", report.campaignBudgetAnalysis)}
-        ${section("4. Search Terms & Intent Analysis", report.searchTermsIntentAnalysis)}
-        ${section("5. Change History & Account Hygiene", report.changeHistoryHygiene)}
-        ${section("6. Website / Landing Page / GA4 CRO Notes", report.croNotes)}
+        <p class="meta">${escapeHtml(input.websiteUrl || "Website niet opgegeven")} | ${escapeHtml(input.currentPeriod || "Periode niet opgegeven")}</p>
+        ${section("1. Samenvatting", report.executiveSummary)}
+        ${section(report.comparison.hasPreviousData ? "2. Prestatievergelijking" : "2. Prestatieoverzicht", report.performanceNarrative)}
+        ${section("3. Campagnes en budget", report.campaignBudgetAnalysis)}
+        ${section("4. Zoektermen en intentie", report.searchTermsIntentAnalysis)}
+        ${section("5. Wijzigingen en accountkwaliteit", report.changeHistoryHygiene)}
+        ${section("6. Website, landingspagina en CRO", report.croNotes)}
         <section>
-          <h2>7. Recommended Next Steps</h2>
+          <h2>7. Aanbevolen vervolgstappen</h2>
           <table>
-            <thead><tr><th>Action</th><th>Impact</th><th>Effort</th><th>Type</th></tr></thead>
+            <thead><tr><th>Actie</th><th>Impact</th><th>Moeite</th><th>Type</th></tr></thead>
             <tbody>
               ${report.nextSteps
                 .map(
                   (step) =>
-                    `<tr><td>${escapeHtml(step.action)}</td><td>${step.impact}</td><td>${step.effort}</td><td>${escapeHtml(step.type === "quick_win" ? "Quick win" : "Strategic")}</td></tr>`
+                    `<tr><td>${escapeHtml(step.action)}</td><td>${step.impact}</td><td>${step.effort}</td><td>${escapeHtml(step.type === "quick_win" ? "Snelle winst" : "Strategisch")}</td></tr>`
                 )
                 .join("")}
             </tbody>
@@ -146,6 +147,7 @@ export function ReportPreview({
   fileName,
   labeledProductsBase64,
   labeledProductsFileName,
+  labeledProductsMimeType,
   parsedFiles = [],
   onReportChange
 }: ReportPreviewProps) {
@@ -189,7 +191,7 @@ export function ReportPreview({
   if (!report) {
     return (
       <div className="rounded-lg border border-dashed border-line bg-mist p-8 text-sm text-gray-600">
-        Your audit preview will appear here after generation. Uploads stay in memory for this request only.
+        Je voorbeeldrapport verschijnt hier na het genereren.
       </div>
     );
   }
@@ -199,7 +201,7 @@ export function ReportPreview({
       <div className="flex flex-col gap-4 border-b border-line pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Editable report preview</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Bewerkbare rapportpreview</p>
             <input
               value={report.title}
               onChange={(event) => updateReport({ title: event.target.value })}
@@ -224,7 +226,7 @@ export function ReportPreview({
               className="inline-flex items-center justify-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-semibold text-ink hover:bg-mist"
             >
               <Printer size={16} />
-              Save as PDF
+              Opslaan als PDF
             </button>
             {labeledProductsBase64 ? (
               <button
@@ -232,14 +234,14 @@ export function ReportPreview({
                 onClick={() =>
                   downloadBase64(
                     labeledProductsBase64,
-                    labeledProductsFileName || "labeled-products.xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    labeledProductsFileName || "productlabels.zip",
+                    labeledProductsMimeType || "application/zip"
                   )
                 }
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-line px-4 py-2 text-sm font-semibold text-ink hover:bg-mist"
               >
                 <FileDown size={16} />
-                Download labeled products
+                Download productlabels
               </button>
             ) : null}
           </div>
@@ -247,15 +249,15 @@ export function ReportPreview({
 
         <div className="grid gap-3 text-sm md:grid-cols-3">
           <div className="rounded-lg bg-mist p-3">
-            <p className="text-xs font-medium text-gray-500">Parsed files</p>
+            <p className="text-xs font-medium text-gray-500">Herkende bestanden</p>
             <p className="mt-1 font-semibold text-ink">{parsedFiles.length}</p>
           </div>
           <div className="rounded-lg bg-mist p-3">
-            <p className="text-xs font-medium text-gray-500">Parsed rows</p>
+            <p className="text-xs font-medium text-gray-500">Herkende regels</p>
             <p className="mt-1 font-semibold text-ink">{uploadedRows}</p>
           </div>
           <div className="rounded-lg bg-mist p-3">
-            <p className="text-xs font-medium text-gray-500">Detected painpoints</p>
+            <p className="text-xs font-medium text-gray-500">Gevonden aandachtspunten</p>
             <p className="mt-1 font-semibold text-ink">{report.painpoints.length}</p>
           </div>
         </div>
@@ -264,7 +266,7 @@ export function ReportPreview({
           <div className="flex flex-wrap gap-2 text-xs text-gray-600">
             {parsedFiles.map((file) => (
               <span key={`${file.slot}-${file.fileName}`} className="rounded-full border border-line px-3 py-1">
-                {file.fileName}: {file.rows} rows
+                {file.fileName}: {file.rows} regels
               </span>
             ))}
           </div>
@@ -276,8 +278,8 @@ export function ReportPreview({
       <div className="mt-6 grid gap-6">
         <section className="grid gap-3 md:grid-cols-3">
           {[
-            ["Spend", formatMetric(report.comparison.current.spend, "money")],
-            ["Conversions", formatMetric(report.comparison.current.conversions)],
+            ["Kosten", formatMetric(report.comparison.current.spend, "money")],
+            ["Conversies", formatMetric(report.comparison.current.conversions)],
             ["ROAS", formatMetric(report.comparison.current.roas, "ratio")]
           ].map(([label, value]) => (
             <div key={label} className="rounded-lg border border-line p-4">
@@ -287,15 +289,15 @@ export function ReportPreview({
           ))}
         </section>
 
-        <SectionEditor title="1. Executive Summary" rows={report.executiveSummary} onChange={(rows) => updateReport({ executiveSummary: rows })} />
-        <SectionEditor title={report.comparison.hasPreviousData ? "2. Performance Comparison" : "2. Performance Snapshot"} rows={report.performanceNarrative} onChange={(rows) => updateReport({ performanceNarrative: rows })} />
-        <SectionEditor title="3. Campaign & Budget Analysis" rows={report.campaignBudgetAnalysis} onChange={(rows) => updateReport({ campaignBudgetAnalysis: rows })} />
-        <SectionEditor title="4. Search Terms & Intent Analysis" rows={report.searchTermsIntentAnalysis} onChange={(rows) => updateReport({ searchTermsIntentAnalysis: rows })} />
-        <SectionEditor title="5. Change History & Account Hygiene" rows={report.changeHistoryHygiene} onChange={(rows) => updateReport({ changeHistoryHygiene: rows })} />
-        <SectionEditor title="6. Website / Landing Page / GA4 CRO Notes" rows={report.croNotes} onChange={(rows) => updateReport({ croNotes: rows })} />
+        <SectionEditor title="1. Samenvatting" rows={report.executiveSummary} onChange={(rows) => updateReport({ executiveSummary: rows })} />
+        <SectionEditor title={report.comparison.hasPreviousData ? "2. Prestatievergelijking" : "2. Prestatieoverzicht"} rows={report.performanceNarrative} onChange={(rows) => updateReport({ performanceNarrative: rows })} />
+        <SectionEditor title="3. Campagnes en budget" rows={report.campaignBudgetAnalysis} onChange={(rows) => updateReport({ campaignBudgetAnalysis: rows })} />
+        <SectionEditor title="4. Zoektermen en intentie" rows={report.searchTermsIntentAnalysis} onChange={(rows) => updateReport({ searchTermsIntentAnalysis: rows })} />
+        <SectionEditor title="5. Wijzigingen en accountkwaliteit" rows={report.changeHistoryHygiene} onChange={(rows) => updateReport({ changeHistoryHygiene: rows })} />
+        <SectionEditor title="6. Website, landingspagina en CRO" rows={report.croNotes} onChange={(rows) => updateReport({ croNotes: rows })} />
 
         <section>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Detected painpoints</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Gevonden aandachtspunten</h3>
           <div className="mt-3 space-y-3">
             {report.painpoints.length ? (
               report.painpoints.slice(0, 8).map((painpoint) => (
@@ -309,14 +311,14 @@ export function ReportPreview({
                 </div>
               ))
             ) : (
-              <p className="text-sm text-gray-600">No automatic painpoints detected yet. Add campaign and search term exports for sharper output.</p>
+              <p className="text-sm text-gray-600">Er zijn nog geen automatische aandachtspunten gevonden. Voeg campagne- en zoektermenexports toe voor scherpere output.</p>
             )}
           </div>
         </section>
 
         <section>
           <div className="flex items-center justify-between gap-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">7. Recommended Next Steps</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">7. Aanbevolen vervolgstappen</h3>
             <Save size={16} className="text-gray-400" />
           </div>
           <div className="mt-3 divide-y divide-line rounded-lg border border-line">
@@ -344,23 +346,23 @@ export function ReportPreview({
                   value={step.effort}
                   onChange={(event) => updateAction(index, { effort: Number(event.target.value) as PriorityAction["effort"] })}
                   className="rounded-md border border-line px-3 py-2"
-                  aria-label="Effort"
+                  aria-label="Moeite"
                 />
                 <select
                   value={step.type}
                   onChange={(event) => updateAction(index, { type: event.target.value as PriorityAction["type"] })}
                   className="rounded-md border border-line px-3 py-2"
-                  aria-label="Action type"
+                  aria-label="Actietype"
                 >
-                  <option value="quick_win">Quick win</option>
-                  <option value="strategic">Strategic</option>
+                  <option value="quick_win">Snelle winst</option>
+                  <option value="strategic">Strategisch</option>
                 </select>
               </div>
             ))}
           </div>
           <p className="mt-3 flex items-center gap-2 text-xs text-gray-500">
             <FileDown size={14} />
-            DOCX export uses the edited text above. PDF uses the browser print dialog, so choose "Save as PDF".
+            DOCX gebruikt de bewerkte tekst hierboven. PDF gebruikt het printvenster van de browser; kies daar &quot;Opslaan als PDF&quot;.
           </p>
         </section>
       </div>

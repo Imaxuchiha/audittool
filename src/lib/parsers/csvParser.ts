@@ -73,7 +73,7 @@ function sliceFromLikelyHeader(text: string): { csv: string; delimiter?: string 
 }
 
 export function parseCsv(buffer: ArrayBuffer): Record<string, unknown>[] {
-  const text = new TextDecoder("utf-8").decode(buffer);
+  const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
   const { csv, delimiter } = sliceFromLikelyHeader(text);
   const parsed = Papa.parse<Record<string, unknown>>(csv, {
     delimiter,
@@ -96,5 +96,9 @@ export function parseCsv(buffer: ArrayBuffer): Record<string, unknown>[] {
       delete (cleanRow as Record<string, unknown>).__parsed_extra;
       return cleanRow;
     })
-    .filter((row) => Object.values(row).some((value) => value !== undefined && value !== null && value !== ""));
+    .filter((row) => Object.values(row).some((value) => value !== undefined && value !== null && value !== ""))
+    .filter((row) => {
+      const firstValue = String(Object.values(row)[0] || "").trim().toLowerCase();
+      return !["total", "totals", "totaal", "grand total"].some((term) => firstValue === term || firstValue.startsWith(`${term} `));
+    });
 }

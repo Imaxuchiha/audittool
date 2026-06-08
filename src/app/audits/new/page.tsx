@@ -10,9 +10,9 @@ export default function NewAuditPage() {
           <Logo />
           <div className="flex items-center gap-4">
             <Link href="/" className="text-sm font-semibold text-gray-600 hover:text-ink">
-              Back to dashboard
+              Terug naar start
             </Link>
-            <p className="text-sm text-gray-500">V1: CSV/XLSX uploads only</p>
+            <p className="text-sm text-gray-500">CSV, TSV en XLSX</p>
           </div>
         </div>
         <AuditForm />

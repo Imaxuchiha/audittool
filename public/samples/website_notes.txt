@@ -1,0 +1,1 @@
+The homepage has a clear CTA, but the product pages bury delivery information below the fold. Reviews are visible only near the bottom of the page. Mobile checkout has four steps and the discount code field is more prominent than the payment button.

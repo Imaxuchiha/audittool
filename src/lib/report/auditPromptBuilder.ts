@@ -8,15 +8,22 @@ function money(value: number): string {
   return new Intl.NumberFormat("en", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 }
 
-function metricLine(comparison: PerformanceComparison): string {
+function metricLine(comparison: PerformanceComparison, language: "nl" | "en" = "en"): string {
   const { current, deltaPercent } = comparison;
-  const currentLine = `${money(current.spend)} spend, ${current.clicks.toFixed(0)} clicks, ${percent(current.ctr)} CTR, ${current.conversions.toFixed(1)} conversions, ${money(current.cpa)} CPA and ${current.roas.toFixed(1)} ROAS.`;
+  const currentLine =
+    language === "nl"
+      ? `${money(current.spend)} kosten, ${current.clicks.toFixed(0)} klikken, ${percent(current.ctr)} CTR, ${current.conversions.toFixed(1)} conversies, ${money(current.cpa)} CPA en ${current.roas.toFixed(1)} ROAS.`
+      : `${money(current.spend)} spend, ${current.clicks.toFixed(0)} clicks, ${percent(current.ctr)} CTR, ${current.conversions.toFixed(1)} conversions, ${money(current.cpa)} CPA and ${current.roas.toFixed(1)} ROAS.`;
 
   if (!comparison.hasPreviousData) {
-    return `${currentLine} No previous period was used, so this is a current-state read rather than a period-over-period comparison.`;
+    return language === "nl"
+      ? `${currentLine} Er is geen vorige periode gebruikt, dus dit is een huidige-status scan in plaats van een periode-op-periode vergelijking.`
+      : `${currentLine} No previous period was used, so this is a current-state read rather than a period-over-period comparison.`;
   }
 
-  return `${currentLine} Spend moved ${percent(deltaPercent.spend)}, conversions ${percent(deltaPercent.conversions)} and ROAS ${percent(deltaPercent.roas)} versus the comparison period.`;
+  return language === "nl"
+    ? `${currentLine} Kosten veranderden met ${percent(deltaPercent.spend)}, conversies met ${percent(deltaPercent.conversions)} en ROAS met ${percent(deltaPercent.roas)} ten opzichte van de vergelijkingsperiode.`
+    : `${currentLine} Spend moved ${percent(deltaPercent.spend)}, conversions ${percent(deltaPercent.conversions)} and ROAS ${percent(deltaPercent.roas)} versus the comparison period.`;
 }
 
 function campaignName(row: MetricRow): string {
@@ -84,13 +91,13 @@ export function buildAuditReport(
 
   if (input.language === "nl") {
     return {
-      title: `${input.clientName} Google Ads Audit`,
+      title: `${input.clientName} Google Ads-scan`,
       generatedAt: new Date().toISOString(),
       comparison,
       painpoints,
       executiveSummary: [
         "Dit rapport is geschreven in een directe PPC-strategietoon, met focus op commerciele impact in plaats van losse kanaalstatistieken.",
-        `Voor ${input.clientName} is het huidige beeld: ${metricLine(comparison)}`,
+        `Voor ${input.clientName} is het huidige beeld: ${metricLine(comparison, "nl")}`,
         topPainpoints.length
           ? `De belangrijkste blokkades zijn ${topPainpoints.map((item) => item.title.toLowerCase()).join(", ")}. Dit zijn de punten die waarschijnlijk het meeste effect hebben op winst, leadkwaliteit of schaalbaarheid.`
           : "De geuploade data laat geen duidelijke alarmsituatie zien. Verrijk de audit met zoektermen, conversiedata en landingspagina-notities om de aanbevelingen scherper te maken.",
@@ -107,7 +114,13 @@ export function buildAuditReport(
         topCampaigns.length ? `Best presterende campagnes: ${topCampaigns.join("; ")}.` : "Er is niet genoeg campagneniveau-data om betrouwbare winnaars aan te wijzen.",
         weakCampaigns.length ? `Campagnes die aandacht nodig hebben: ${weakCampaigns.join("; ")}.` : "Er is geen duidelijke onderpresterende campagne gevonden in de upload.",
         "Budget hoort naar intentie en rendement te gaan. Bekijk Search en Shopping apart van PMax, omdat daar zoekintentie en productrendement beter zichtbaar zijn.",
-        ...productLabelNotes.map((note) => note.replace("Product source uploaded", "Productbron geupload").replace("Labelizer notes", "Labelizer-notities"))
+        ...productLabelNotes.map((note) =>
+          note
+            .replace("Product source uploaded", "Productbron geupload")
+            .replace("products were parsed and", "producten zijn verwerkt en")
+            .replace("products received custom labels.", "producten kregen custom labels.")
+            .replace("Labelizer notes", "Labelizer-notities")
+        )
       ],
       searchTermsIntentAnalysis: [
         highIntentTerms.length
@@ -140,13 +153,13 @@ export function buildAuditReport(
   }
 
   const report: AuditReport = {
-    title: `${input.clientName} Google Ads Audit`,
+      title: `${input.clientName} Google Ads Audit`,
     generatedAt: new Date().toISOString(),
     comparison,
     painpoints,
     executiveSummary: [
       languageHint,
-      `For ${input.clientName}, the commercial picture is: ${metricLine(comparison)}`,
+      `For ${input.clientName}, the commercial picture is: ${metricLine(comparison, "en")}`,
       topPainpoints.length
         ? `The main blockers are ${topPainpoints.map((item) => item.title.toLowerCase()).join(", ")}. These are the areas most likely to affect profit, lead quality, or scaling confidence.`
         : "The uploaded data does not show an obvious crisis point. The next step is to enrich the audit with search term, conversion, and landing-page data so the recommendations can become sharper.",

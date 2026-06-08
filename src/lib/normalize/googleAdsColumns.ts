@@ -10,11 +10,11 @@ const aliases: Record<string, string[]> = {
   date: ["date", "day", "datum"],
   change: ["change", "change type", "wijziging", "description"],
   changeUser: ["user", "changed by", "gebruiker"],
-  impressions: ["impr.", "impressions", "impressies"],
+  impressions: ["impr.", "impressions", "impressies", "vertoningen"],
   clicks: ["clicks", "klikken"],
   spend: ["cost", "costs", "spend", "kosten"],
   conversions: ["conversions", "conv.", "conversies"],
-  conversionValue: ["conversion value", "conv. value", "conversion value/cost", "conversiewaarde", "revenue"],
+  conversionValue: ["conversion value", "conv. value", "conversion value/cost", "conversiewaarde", "revenue", "omzet"],
   ctr: ["ctr"],
   avgCpc: ["avg. cpc", "average cpc", "gem. cpc"],
   cpa: ["cost / conv.", "cost per conversion", "cpa", "kosten / conv."],
@@ -24,10 +24,14 @@ const aliases: Record<string, string[]> = {
   impressionShareLostRank: ["search lost is (rank)", "impr. share lost rank", "lost is rank"]
 };
 
+function normalizeKey(key: string): string {
+  return key.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 function keyFor(row: Record<string, unknown>, field: string): string | undefined {
   const normalizedKeys = Object.keys(row).map((key) => ({
     original: key,
-    normalized: key.trim().toLowerCase()
+    normalized: normalizeKey(key)
   }));
 
   return normalizedKeys.find(({ normalized }) => aliases[field]?.includes(normalized))?.original;
@@ -44,13 +48,27 @@ export function toNumber(value: unknown): number {
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
   if (value === undefined || value === null || value === "") return 0;
 
-  const cleaned = String(value)
-    .replace(/[€$£,\s]/g, "")
-    .replace("%", "")
+  let cleaned = String(value)
+    .trim()
+    .replace(/[€$£\s]/g, "")
+    .replace(/[^\d,.\-()]/g, "")
     .replace(/\((.*)\)/, "-$1");
 
+  const isPercent = String(value).includes("%");
+  const hasComma = cleaned.includes(",");
+  const hasDot = cleaned.includes(".");
+
+  if (hasComma && hasDot) {
+    const lastComma = cleaned.lastIndexOf(",");
+    const lastDot = cleaned.lastIndexOf(".");
+    cleaned = lastComma > lastDot ? cleaned.replace(/\./g, "").replace(",", ".") : cleaned.replace(/,/g, "");
+  } else if (hasComma) {
+    cleaned = cleaned.replace(",", ".");
+  }
+
   const parsed = Number(cleaned);
-  return Number.isFinite(parsed) ? parsed : 0;
+  if (!Number.isFinite(parsed)) return 0;
+  return isPercent && Math.abs(parsed) > 1 ? parsed / 100 : parsed;
 }
 
 function number(row: Record<string, unknown>, field: string): number {

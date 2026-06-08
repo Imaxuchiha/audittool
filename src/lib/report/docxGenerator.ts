@@ -44,20 +44,22 @@ function percent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function metricTable(current: SummaryMetrics, previous: SummaryMetrics, hasPreviousData: boolean): Table {
+function metricTable(current: SummaryMetrics, previous: SummaryMetrics, hasPreviousData: boolean, isDutch: boolean): Table {
   const rows = [
-    ["Spend", money(current.spend), money(previous.spend)],
-    ["Clicks", current.clicks.toFixed(0), previous.clicks.toFixed(0)],
-    ["Impressions", current.impressions.toFixed(0), previous.impressions.toFixed(0)],
+    [isDutch ? "Kosten" : "Spend", money(current.spend), money(previous.spend)],
+    [isDutch ? "Klikken" : "Clicks", current.clicks.toFixed(0), previous.clicks.toFixed(0)],
+    [isDutch ? "Vertoningen" : "Impressions", current.impressions.toFixed(0), previous.impressions.toFixed(0)],
     ["CTR", percent(current.ctr), percent(previous.ctr)],
     ["Avg CPC", money(current.avgCpc), money(previous.avgCpc)],
-    ["Conversions", current.conversions.toFixed(1), previous.conversions.toFixed(1)],
+    [isDutch ? "Conversies" : "Conversions", current.conversions.toFixed(1), previous.conversions.toFixed(1)],
     ["CPA", money(current.cpa), money(previous.cpa)],
-    ["Conversion value", money(current.conversionValue), money(previous.conversionValue)],
+    [isDutch ? "Conversiewaarde" : "Conversion value", money(current.conversionValue), money(previous.conversionValue)],
     ["ROAS", current.roas.toFixed(1), previous.roas.toFixed(1)]
   ];
 
-  const header = hasPreviousData ? ["Metric", "Current", "Previous"] : ["Metric", "Current"];
+  const header = hasPreviousData
+    ? [isDutch ? "Metric" : "Metric", isDutch ? "Huidig" : "Current", isDutch ? "Vorige" : "Previous"]
+    : [isDutch ? "Metric" : "Metric", isDutch ? "Huidig" : "Current"];
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
@@ -107,10 +109,11 @@ function actionTable(actions: PriorityAction[]): Table {
 }
 
 export async function generateAuditDocx(input: AuditInput, report: AuditReport): Promise<Buffer> {
+  const isDutch = input.language === "nl";
   const doc = new Document({
-    creator: "Google Ads Audit Generator",
+    creator: "CampaignScan",
     title: report.title,
-    description: "Google Ads audit report generated from uploaded exports.",
+    description: "Google Ads-scan op basis van geuploade exports.",
     sections: [
       {
         properties: {},
@@ -120,21 +123,21 @@ export async function generateAuditDocx(input: AuditInput, report: AuditReport):
             spacing: { after: 120 }
           }),
           paragraph(`${input.websiteUrl} | ${input.currentPeriod}`),
-          paragraph("A practical PPC audit based on the uploaded exports and strategist notes."),
-          heading("1. Executive Summary"),
+          paragraph(isDutch ? "Een praktische Google Ads-scan op basis van de geuploade exports en notities." : "A practical PPC audit based on the uploaded exports and strategist notes."),
+          heading(isDutch ? "1. Samenvatting" : "1. Executive Summary"),
           ...report.executiveSummary.map(paragraph),
-          heading("2. Performance Comparison"),
+          heading(isDutch ? (report.comparison.hasPreviousData ? "2. Prestatievergelijking" : "2. Prestatieoverzicht") : "2. Performance Comparison"),
           ...report.performanceNarrative.map(paragraph),
-          metricTable(report.comparison.current, report.comparison.previous, report.comparison.hasPreviousData),
-          heading("3. Campaign & Budget Analysis"),
+          metricTable(report.comparison.current, report.comparison.previous, report.comparison.hasPreviousData, isDutch),
+          heading(isDutch ? "3. Campagnes en budget" : "3. Campaign & Budget Analysis"),
           ...report.campaignBudgetAnalysis.map(paragraph),
-          heading("4. Search Terms & Intent Analysis"),
+          heading(isDutch ? "4. Zoektermen en intentie" : "4. Search Terms & Intent Analysis"),
           ...report.searchTermsIntentAnalysis.map(paragraph),
-          heading("5. Change History & Account Hygiene"),
+          heading(isDutch ? "5. Wijzigingen en accountkwaliteit" : "5. Change History & Account Hygiene"),
           ...report.changeHistoryHygiene.map(paragraph),
-          heading("6. Website / Landing Page / GA4 CRO Notes"),
+          heading(isDutch ? "6. Website, landingspagina en CRO" : "6. Website / Landing Page / GA4 CRO Notes"),
           ...report.croNotes.map(paragraph),
-          heading("7. Recommended Next Steps"),
+          heading(isDutch ? "7. Aanbevolen vervolgstappen" : "7. Recommended Next Steps"),
           ...report.painpoints.slice(0, 6).map((painpoint) => bullet(`${painpoint.title}: ${painpoint.recommendation}`)),
           actionTable(report.nextSteps)
         ]

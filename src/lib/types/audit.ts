@@ -4,6 +4,10 @@ export type BusinessType = "ecommerce" | "lead_gen" | "local_service" | "b2b" | 
 
 export type MainGoal = "leads" | "purchases" | "roas" | "revenue" | "bookings" | "calls";
 
+export type AuditMode = "audit" | "labelizer" | "both";
+
+export type CustomLabelColumn = "custom_label_0" | "custom_label_1" | "custom_label_2" | "custom_label_3" | "custom_label_4";
+
 export type LabelStrategy =
   | "none"
   | "priority"
@@ -40,9 +44,12 @@ export type UploadSlot =
   | "ga4_events"
   | "search_console_queries"
   | "product_source"
+  | "product_performance"
+  | "previous_labelizer"
   | "website_notes";
 
 export interface AuditInput {
+  mode: AuditMode;
   clientName: string;
   contactEmail: string;
   websiteUrl: string;
@@ -55,6 +62,7 @@ export interface AuditInput {
   strategistNotes: string;
   leadConsent: boolean;
   useProductLabelizer: boolean;
+  productLabelColumn: CustomLabelColumn;
   labelStrategies: LabelStrategyConfig;
 }
 
@@ -68,6 +76,8 @@ export interface ParsedFileSummary {
   fileName: string;
   slot: UploadSlot;
   rows: number;
+  confidence?: "high" | "medium" | "low";
+  warnings?: string[];
 }
 
 export interface ProductLabelSummary {
@@ -75,6 +85,10 @@ export interface ProductLabelSummary {
   labeledProducts: number;
   labels: Record<string, number>;
   notes: string[];
+  matchRate?: number;
+  selectedColumn?: CustomLabelColumn;
+  blocked?: boolean;
+  warnings?: string[];
 }
 
 export interface MetricRow {

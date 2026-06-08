@@ -14,6 +14,8 @@ const labels: Record<UploadSlot, string> = {
   ga4_events: "GA4 events",
   search_console_queries: "Search Console queries",
   product_source: "Product source / feed",
+  product_performance: "Product performance",
+  previous_labelizer: "Previous labelizer file",
   website_notes: "Website notes"
 };
 
@@ -28,6 +30,8 @@ const hints: Record<UploadSlot, string> = {
   ga4_events: "events.csv or .xlsx",
   search_console_queries: "queries.csv or .xlsx",
   product_source: "product feed.csv or .xlsx",
+  product_performance: "product performance.csv or .xlsx",
+  previous_labelizer: "previous labelizer.csv",
   website_notes: ".md or .txt"
 };
 
