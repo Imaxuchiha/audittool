@@ -255,7 +255,7 @@ export function AuditForm() {
         submitted_at: new Date().toISOString()
       });
 
-      const response = await fetch("/", {
+      const response = await fetch("/__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body
@@ -333,21 +333,6 @@ export function AuditForm() {
 
   return (
     <>
-      <form name="campaignscan-leads" data-netlify="true" hidden>
-        <input type="hidden" name="form-name" value="campaignscan-leads" />
-        <input type="email" name="email" />
-        <input type="text" name="client_name" />
-        <input type="text" name="website_url" />
-        <input type="text" name="business_type" />
-        <input type="text" name="main_goal" />
-        <input type="text" name="audit_mode" />
-        <input type="text" name="current_period" />
-        <input type="text" name="previous_period" />
-        <input type="text" name="consent" />
-        <input type="text" name="uploaded_files" />
-        <input type="text" name="submitted_at" />
-      </form>
-
       <div className="rounded-lg border border-line bg-white p-6 shadow-soft">
         <nav aria-label="Voortgang" className="grid gap-2 sm:grid-cols-6">
           {steps.map((label, index) => {
