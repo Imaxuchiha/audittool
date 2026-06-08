@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  Static form skeleton for Netlify Forms detection.
+  This file exists solely so Netlify's build bot can register the
+  "campaignscan-leads" form at build time. It is required for
+  @netlify/plugin-nextjs v5, which no longer detects forms rendered
+  by the Next.js server. The app submits to this path via AJAX.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Netlify Forms</title>
+  </head>
+  <body>
+    <form name="campaignscan-leads" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="campaignscan-leads" />
+      <input type="text" name="bot-field" />
+      <input type="email" name="email" />
+      <input type="text" name="client_name" />
+      <input type="text" name="website_url" />
+      <input type="text" name="business_type" />
+      <input type="text" name="main_goal" />
+      <input type="text" name="audit_mode" />
+      <input type="text" name="current_period" />
+      <input type="text" name="previous_period" />
+      <input type="text" name="consent" />
+      <input type="text" name="uploaded_files" />
+      <input type="text" name="submitted_at" />
+    </form>
+  </body>
+</html>
